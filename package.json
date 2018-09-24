@@ -2,6 +2,9 @@
   "name": "text2event",
   "version": "1.0.0",
   "description": "extract events from text",
+  "repository": "josherich/text2event",
+  "bugs": "https://github.com/josherich/text2event/issues",
+  "homepage": "https://github.com/josherich/text2event",
   "main": "index.js",
   "scripts": {
     "test": "test"
