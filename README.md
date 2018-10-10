@@ -23,27 +23,21 @@ text2event.events(content); // default: parse English text
 text2event.events(content, 'zh'); // parse Chinese text
 ```
 
-### Use with wikijs
+### Use with wikipedia
 
-```bash
-npm install --save wikijs
-```
 
 ```javascript
 const Text2Event = require('text2event');
 const text2event = new Text2Event();
-text2event.events(content, 'zh');
-
-const wiki = require('wikijs').default;
-const word = 'Holy_Roman_Empire';
-
-wiki({ apiUrl: 'http://en.wikipedia.org/w/api.php' })
-  .page(word)
-  .then(page => page.content())
-  .then((content) => {
-      const event_list = text2event.events(content);
-  })
+const keyword = "Brett_Kavanaugh";
+text2event.wiki(keyword, 'en').then((list) => {
+  console.log(list)
+})
 ```
+
+### Deploy on AWS Lambda
+
+An AWS Lambda version of this script can be found in `lib/lambda.js`
 
 ### result format
 ```javascript
