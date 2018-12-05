@@ -1,36 +1,36 @@
 
-# Text2Event
+# text-event
 
 ## How to use
 
 ### Setup
 
-Install it:
+Install:
 
 ```bash
-npm install --save text2event
+npm install --save text-event
 ```
 
 ### Run
 
 ```javascript
 
-const Text2Event = require('text2event');
+const TextEvent = require('text-event');
 
-const text2event = new Text2Event();
+const textevent = new TextEvent();
 
-text2event.events(content); // default: parse English text
-text2event.events(content, 'zh'); // parse Chinese text
+textevent.events(content); // default: parse English text
+textevent.events(content, 'zh'); // parse Chinese text
 ```
 
 ### Use with wikipedia
 
 
 ```javascript
-const Text2Event = require('text2event');
-const text2event = new Text2Event();
+const TextEvent = require('text-event');
+const textevent = new TextEvent();
 const keyword = "Brett_Kavanaugh";
-text2event.wiki(keyword, 'en').then((list) => {
+textevent.wiki(keyword, 'en').then((list) => {
   console.log(list)
 })
 ```
