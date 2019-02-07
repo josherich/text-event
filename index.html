@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="canonical" href="https://news.mindynode.com/text-event/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text to Events</title>
+  <link rel="stylesheet" type="text/css" href="styles/inline.css">
+  <style>
+    .text-input {
+      width: 100%;
+    }
+    .wiki-input {
+      width: 100%;
+    }
+    .content {
+      display: block;
+      width: 100%;
+      border: 0;
+      margin: 10px 0;
+      font-size: 1em;
+    }
+    textarea {
+      font-size: 1em;
+    }
+    #btn_run {
+      display: block;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <h1 class="header__title">Text to Events</h1>
+    <button id="butRefresh" class="headerButton" aria-label="Refresh"></button>
+    <button id="butAdd" class="headerButton" aria-label="Add"></button>
+  </header>
+
+  <main class="main">
+    
+    <div class="card eventTemplate" hidden>
+      
+      <div class="date"></div>
+
+      <input type="text" class="content"/>
+
+      <button class="btn-copy mdl-button" aria-label="copy">copy</button>
+
+    </div>
+
+    <textarea name="" id="" class="text-input" cols="30" rows="10" placeholder="text content..."></textarea>
+    <input type="text" class="wiki-input" placeholder="wiki query..." hidden>
+    <button id="btn_run" class="mdl-button--primary mdl-button">Run</button>
+
+    <div class="main-list"></div>
+
+  </main>
+
+  <div class="dialog-container">
+
+  </div>
+
+  <div class="loader">
+    <svg viewBox="0 0 32 32" width="32" height="32">
+      <circle id="spinner" cx="16" cy="16" r="14" fill="none"></circle>
+    </svg>
+  </div>
+
+  <!-- Uncomment the line below when ready to test with fake data -->
+  <script src="lib/app.js"></script>
+  <script>
+
+  (function() {
+    'use strict';
+    const text = `飓风布雷特（英语：Hurricane Bret）是1999年大西洋飓风季期间发展形成的第一场四级飓风，也是继1989年的飓风杰里以来第一个以飓风强度登陆德克萨斯州的热带气旋。布雷特源于8月18日的一股东风波[注 1]，在坎佩切湾缓慢发展，并受到弱转向气流影响。8月20日，风暴开始北上，并于次日进入爆发性增强期。经过这段快速增强期后，该风暴系统达到中心气压944毫巴（百帕，27.88英寸汞柱）、最大持续风速每小时230公里的最高强度。当天晚些时候，飓风减弱到三级强度并登陆德克萨斯州的帕德雷岛。此后不久，布雷特进一步减弱，登陆24小时后就降级成了热带低气压。风暴残留最终于8月26日清晨在墨西哥北部上空消散。
+
+    布雷特对德克萨斯州沿海多个城市构成威胁，18万居民因此疏散。这些地区开设了多个避难所，并将监狱犯人转移。风暴到达数天前，美国国家飓风中心发布了多份飓风观察预警，之后又向德克萨斯州和墨西哥边境附近区域发布了飓风警告。多条通往屏障岛城镇的主要道路予以封闭，以防居民在飓风来袭期间试图穿越桥梁。附近的墨西哥有约7000人在风暴袭击前离开沿海地区。墨西哥政府在该国北部开设了数百个避难所，以应对可能出现的大规模洪灾。
+
+    气旋最终登陆的区域人烟稀少，因此造成的破坏小于预期，但还是夺走了7人的生命，其中德克萨斯州4人，墨西哥3人。大部分人员丧生都是因道路湿滑引发的交通事故导致。飓风登陆期间给德克萨斯州马塔戈达岛带去了高达2.7米的风暴潮[注 2]。德克萨斯州的最高降雨量达335毫米，估计墨西哥局部区域要超过360毫米。受到影响的地区有许多民房受损或被毁，导致约150人无家可归。整场风暴共计造成了1500万美元（1999年美元，相当于2019年的2157萬美元）的经济损失。`
+    document.querySelector('.text-input').value = text
+    var app = {
+      isLoading: true,
+      visibleCards: {},
+      selectedCities: [],
+      spinner: document.querySelector('.loader'),
+      eventTemplate: document.querySelector('.eventTemplate'),
+      container: document.querySelector('.main-list'),
+    };
+
+    app.spinner.setAttribute('hidden', true);
+
+    document.getElementById('btn_run').addEventListener('click', function() {
+      const content = document.querySelector('.text-input').value
+      app.runParser(content);
+    });
+
+    app.runParser = function(content) {
+      const textEvent = new TextEvent()
+      const list = textEvent.events(content, 'zh')
+      app.container.innerHTML = ""
+      for (let i = 0; i < list.length; i++) {
+        let card = app.eventTemplate.cloneNode(true)
+        let data = list[i]
+        card.classList.remove('eventTemplate')
+        card.removeAttribute('hidden')
+        app.container.appendChild(card)
+
+        card.querySelector('.date').textContent = data.raw_dates.join(' ')
+        card.querySelector('.content').value = data.text
+        card.querySelector('.btn-copy').addEventListener('click', function() {
+          card.querySelector('.content').select()
+          document.execCommand("copy")
+        })
+      }
+    }
+
+  })()
+
+    
+  </script>
+
+</body>
+</html>
