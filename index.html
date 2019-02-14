@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="canonical" href="https://news.mindynode.com/text-event/">
+  <link rel="shortcut icon" type="image/png" href="images/favicon.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="images/icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Text to Events</title>
   <link rel="stylesheet" type="text/css" href="styles/inline.css">
@@ -21,12 +23,20 @@
       margin: 10px 0;
       font-size: 1em;
     }
+    .query-content {
+      margin: 0 16px;
+    }
     textarea {
       font-size: 1em;
     }
     #btn_run {
       display: block;
       width: 100%;
+      color: white;
+      background: #6200EE;
+    }
+    .action {
+      margin: 10px 16px;
     }
   </style>
 </head>
@@ -34,8 +44,8 @@
 
   <header class="header">
     <h1 class="header__title">Text to Events</h1>
-    <button id="butRefresh" class="headerButton" aria-label="Refresh"></button>
-    <button id="butAdd" class="headerButton" aria-label="Add"></button>
+    <button id="butRefresh" class="headerButton" aria-label="Refresh" hidden></button>
+    <button id="butAdd" class="headerButton" aria-label="Add" hidden></button>
   </header>
 
   <main class="main">
@@ -44,15 +54,21 @@
       
       <div class="date"></div>
 
-      <textarea class="content"></textarea>
+      <textarea class="content" rows="5"></textarea>
 
       <button class="btn-copy mdl-button" aria-label="copy">copy</button>
 
     </div>
 
-    <textarea name="" id="" class="text-input" cols="30" rows="10" placeholder="text content..."></textarea>
+    <div class="query-content">
+      <textarea name="" id="" class="text-input" cols="30" rows="10" placeholder="text content..."></textarea>
+    </div>
+    
     <input type="text" class="wiki-input" placeholder="wiki query..." hidden>
-    <button id="btn_run" class="mdl-button--primary mdl-button">Run</button>
+
+    <div class="action">
+      <button id="btn_run" class="mdl-button--primary mdl-button">Run</button>
+    </div>
 
     <div class="main-list"></div>
 
@@ -114,6 +130,12 @@
           document.execCommand("copy")
         })
       }
+    }
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+      .register('lib/sw.js')
+      .then(function() { console.log('Service Worker Registered'); });
     }
 
   })()
