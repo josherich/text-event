@@ -3,6 +3,7 @@ var cacheName = 'textevent.context';
 var filesToCache = [
   '/',
   '/index.html',
+  '/images/favicon.png',
   '/lib/app.js',
   '/styles/inline.css',
   '/images/refresh.svg',
