@@ -1,13 +1,13 @@
 var cacheName = 'textevent.context';
 
 var filesToCache = [
-  '/',
-  '/index.html',
-  '/images/favicon.png',
-  '/lib/app.js',
-  '/styles/inline.css',
-  '/images/refresh.svg',
-  '/images/icon.png'
+  '/text-event/',
+  '/text-event/index.html',
+  '/text-event/images/favicon.png',
+  '/text-event/lib/app.js',
+  '/text-event/styles/inline.css',
+  '/text-event/images/refresh.svg',
+  '/text-event/images/icon.png'
 ];
 
 self.addEventListener('install', function(e) {
