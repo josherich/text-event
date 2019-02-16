@@ -5,6 +5,7 @@ var filesToCache = [
   '/text-event/index.html',
   '/text-event/images/favicon.png',
   '/text-event/lib/app.js',
+  '/text-event/lib/jsonp.js',
   '/text-event/styles/inline.css',
   '/text-event/images/refresh.svg',
   '/text-event/images/icon.png'

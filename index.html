@@ -26,6 +26,13 @@
       margin: 10px 0;
       font-size: 1em;
     }
+    .query-search input {
+      font-size: 1.2em;
+      padding: 4px 5px;
+    }
+    .query-search {
+      margin: 10px 16px;
+    }
     .query-content {
       margin: 0 16px;
     }
@@ -35,6 +42,12 @@
     #btn_run {
       display: block;
       width: 100%;
+      color: white;
+      background: #6200EE;
+    }
+    #btn_search {
+      float: right;
+      display: block;
       color: white;
       background: #6200EE;
     }
@@ -56,13 +69,19 @@
   <main class="main">
     
     <div class="card eventTemplate" hidden>
-      
       <div class="date"></div>
-
       <textarea class="content" rows="5"></textarea>
-
       <button class="btn-copy mdl-button" aria-label="copy">copy</button>
+    </div>
 
+    <div class="list-row candTemplate" hidden>
+      <div class="title"></div>
+    </div>
+
+    <div class="query-search">
+      <input type="text" placeholder="Search..." />
+      <button id="btn_search" class="mdl-button--primary mdl-button">Search</button>
+      <div class="cand-list" hidden></div>
     </div>
 
     <div class="query-content">
@@ -91,7 +110,18 @@
 
   <!-- Uncomment the line below when ready to test with fake data -->
   <script src="lib/app.js"></script>
+  <script src="lib/jsonp.js"></script>
   <script>
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker
+    .register('service-worker.js', {
+      scope: './'
+    })
+    .then(function() { 
+      console.log('Service Worker Registered');
+    });
+  }
 
   (function() {
     'use strict';
@@ -101,25 +131,34 @@
 
     气旋最终登陆的区域人烟稀少，因此造成的破坏小于预期，但还是夺走了7人的生命，其中德克萨斯州4人，墨西哥3人。大部分人员丧生都是因道路湿滑引发的交通事故导致。飓风登陆期间给德克萨斯州马塔戈达岛带去了高达2.7米的风暴潮[注 2]。德克萨斯州的最高降雨量达335毫米，估计墨西哥局部区域要超过360毫米。受到影响的地区有许多民房受损或被毁，导致约150人无家可归。整场风暴共计造成了1500万美元（1999年美元，相当于2019年的2157萬美元）的经济损失。`
     document.querySelector('.text-input').value = text
+    
+    const WIKI_URL = "https://en.wikipedia.org/w/api.php"
+
     var app = {
       isLoading: true,
       visibleCards: {},
       selectedCities: [],
       spinner: document.querySelector('.loader'),
       eventTemplate: document.querySelector('.eventTemplate'),
+      candTemplate: document.querySelector('.candTemplate'),
       container: document.querySelector('.main-list'),
+      candContainer: document.querySelector('.cand-list'),
     };
 
     app.spinner.setAttribute('hidden', true);
 
-    document.getElementById('btn_run').addEventListener('click', function() {
+    document.querySelector('#btn_run').addEventListener('click', function() {
       const content = document.querySelector('.text-input').value
       app.runParser(content);
     });
 
+    document.querySelector('#btn_search').addEventListener('click', function(e) {
+      app.searchCand()
+    });
+
     app.runParser = function(content) {
       const textEvent = new TextEvent()
-      const list = textEvent.events(content, 'zh')
+      const list = textEvent.events(content)
       app.container.innerHTML = ""
       for (let i = 0; i < list.length; i++) {
         let card = app.eventTemplate.cloneNode(true)
@@ -137,12 +176,76 @@
       }
     }
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker
-      .register('service-worker.js', {
-        scope: './'
+    app.showCandidates = function(res) {
+      const list = res.query.search
+      for (let i = 0; i < list.length; i++) {
+        let card = app.candTemplate.cloneNode(true)
+        let data = list[i]
+        card.classList.remove('candTemplate')
+        card.removeAttribute('hidden')
+        app.candContainer.appendChild(card)
+
+        card.querySelector('.title').textContent = data.title
+        card.querySelector('.title').addEventListener('click', function() {
+          app.searchWiki(data.title)
+        })
+      }
+      app.candContainer.removeAttribute('hidden')
+    }
+
+    app.searchWiki = function(title) {
+      let endpoint = new URL(WIKI_URL)
+
+      if (title == null) {
+        return;
+      }
+      let PARAMS = {
+        action: "query",  
+        prop: 'extracts',
+        explaintext: '',
+        titles: title,
+        format: 'json'
+      }
+      Object.keys(PARAMS).forEach(key => endpoint.searchParams.append(key, PARAMS[key]))
+      fetchJsonp(endpoint.toString())
+      .then(function(response) {
+        return response.json()
       })
-      // .then(function() { console.log('Service Worker Registered'); });
+      .then(function(res) {
+        console.log(res)
+        let contents = Object.keys(res.query.pages).map(key => res.query.pages[key]['extract'])
+        app.candContainer.innerHTML = ""
+        document.querySelector('.text-input').value = contents.join('\n')
+        app.runParser(contents.join('\n'))
+      });
+    }
+
+    app.searchCand = function() {
+      let endpoint = new URL(WIKI_URL)
+
+      let SEARCHPAGE = document.querySelector('.query-search input').value
+
+      if (SEARCHPAGE == null) {
+        return;
+      }
+
+      let PARAMS = {
+          'action':"query",
+          'list':"search",
+          'srsearch': SEARCHPAGE,
+          'format':"json"
+      }
+
+      Object.keys(PARAMS).forEach(key => endpoint.searchParams.append(key, PARAMS[key]))
+
+      fetchJsonp(endpoint.toString())
+      .then(function(response) {
+        return response.json()
+      })
+      .then(function(res) {
+        console.log(res)
+        app.showCandidates(res)
+      });
     }
 
   })()
